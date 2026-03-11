@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "mgmnvILyFms=",
+  "dgSpecHash": "bc5rO78vEeY=",
   "success": true,
-  "projectFilePath": "D:\\Projetos\\sistemasDegastos\\ControleGastos.Api\\ControleGastos.Api.csproj",
+  "projectFilePath": "D:\\Projetos\\sistemasDegastos\\backend\\ControleGastos.Api.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\wilia\\.nuget\\packages\\microsoft.aspnetcore.openapi\\8.0.10\\microsoft.aspnetcore.openapi.8.0.10.nupkg.sha512",
     "C:\\Users\\wilia\\.nuget\\packages\\microsoft.extensions.apidescription.server\\6.0.5\\microsoft.extensions.apidescription.server.6.0.5.nupkg.sha512",

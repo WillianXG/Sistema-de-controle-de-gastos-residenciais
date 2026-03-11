@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Projetos\\sistemasDegastos\\ControleGastos.Api\\ControleGastos.Api.csproj": {}
+    "D:\\Projetos\\sistemasDegastos\\backend\\ControleGastos.Api.csproj": {}
   },
   "projects": {
-    "D:\\Projetos\\sistemasDegastos\\ControleGastos.Api\\ControleGastos.Api.csproj": {
+    "D:\\Projetos\\sistemasDegastos\\backend\\ControleGastos.Api.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Projetos\\sistemasDegastos\\ControleGastos.Api\\ControleGastos.Api.csproj",
+        "projectUniqueName": "D:\\Projetos\\sistemasDegastos\\backend\\ControleGastos.Api.csproj",
         "projectName": "ControleGastos.Api",
-        "projectPath": "D:\\Projetos\\sistemasDegastos\\ControleGastos.Api\\ControleGastos.Api.csproj",
+        "projectPath": "D:\\Projetos\\sistemasDegastos\\backend\\ControleGastos.Api.csproj",
         "packagesPath": "C:\\Users\\wilia\\.nuget\\packages\\",
-        "outputPath": "D:\\Projetos\\sistemasDegastos\\ControleGastos.Api\\obj\\",
+        "outputPath": "D:\\Projetos\\sistemasDegastos\\backend\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\wilia\\AppData\\Roaming\\NuGet\\NuGet.Config",
