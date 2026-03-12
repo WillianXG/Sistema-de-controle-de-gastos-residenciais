@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using ControleGastos.Api.Models;
 using ControleGastos.Api.Data;
 using ControleGastos.Api.Enums;
+using ControleGastos.Api.Dtos;
 
 namespace ControleGastos.Api.Controllers
 {
@@ -24,41 +25,46 @@ namespace ControleGastos.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post(Transacao transacao)
+        public async Task<IActionResult> Post(TransacaoCreateDto dto)
         {
-            var pessoa = await _context.Pessoas.FindAsync(transacao.PessoaId);
-            var categoria = await _context.Categorias.FindAsync(transacao.CategoriaId);
+            var pessoa = await _context.Pessoas.FindAsync(dto.PessoaId);
+            var categoria = await _context.Categorias.FindAsync(dto.CategoriaId);
 
             if (pessoa == null || categoria == null)
             {
                 return BadRequest("Pessoa ou Categoria inválida");
             }
 
-            if (transacao.Valor <= 0)
+            if (dto.Valor <= 0)
             {
-                return BadRequest("O valor deve ser positivo");
+                return BadRequest("Valor deve ser positivo");
             }
 
-            if (pessoa.Idade < 18 && transacao.Tipo == TipoTransacao.Receita)
+            if (pessoa.Idade < 18 && dto.Tipo == TipoTransacao.Receita)
             {
                 return BadRequest("Menor de idade não pode ter receita");
             }
 
-            if (categoria.Finalidade != FinalidadeCategoria.Ambas)
+            if (categoria.Finalidade == FinalidadeCategoria.Receita && dto.Tipo == TipoTransacao.Despesa)
             {
-                if (categoria.Finalidade == FinalidadeCategoria.Receita && transacao.Tipo == TipoTransacao.Despesa)
-                {
-                    return BadRequest("Categoria não permite despesa");
-                }
-
-                if (categoria.Finalidade == FinalidadeCategoria.Despesa && transacao.Tipo == TipoTransacao.Receita)
-                {
-                    return BadRequest("Categoria não permite receita");
-                }
+                return BadRequest("Categoria inválida para despesa");
             }
 
-            _context.Transacoes.Add(transacao);
+            if (categoria.Finalidade == FinalidadeCategoria.Despesa && dto.Tipo == TipoTransacao.Receita)
+            {
+                return BadRequest("Categoria inválida para receita");
+            }
 
+            var transacao = new Transacao
+            {
+                Descricao = dto.Descricao,
+                Valor = dto.Valor,
+                Tipo = dto.Tipo,
+                PessoaId = dto.PessoaId,
+                CategoriaId = dto.CategoriaId
+            };
+
+            _context.Transacoes.Add(transacao);
             await _context.SaveChangesAsync();
 
             return Ok(transacao);

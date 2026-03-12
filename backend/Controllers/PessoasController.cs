@@ -18,7 +18,7 @@ namespace ControleGastos.Api.Controllers
             _context = context;
         }
 
-        [HttpGet]
+        [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, Pessoa pessoa)
         {
             var p = await _context.Pessoas.FindAsync(id);
@@ -58,6 +58,14 @@ namespace ControleGastos.Api.Controllers
             return Ok();
         }
 
+        [HttpGet]
+        public async Task<IActionResult> Get() 
+        {
+            var p = await _context.Pessoas.ToListAsync();
+
+            return Ok(p);
+        }
+
         [HttpGet("totais")]
         public async Task<ActionResult<TotaisPessoasDto>> GetTotaisPorPessoa()
         {
@@ -69,19 +77,19 @@ namespace ControleGastos.Api.Controllers
             {
                 PessoaId = p.Id,
                 Nome = p.Nome,
-                TotalReceitas = p.Transacoes
+                TotalReceitas = (p.Transacoes ?? new List<Transacao>())
                     .Where(t => t.Tipo == TipoTransacao.Receita)
                     .Sum(t => t.Valor),
 
-                TotalDespesas = p.Transacoes
+                TotalDespesas = (p.Transacoes ?? new List<Transacao>())
                     .Where(t => t.Tipo == TipoTransacao.Despesa)
                     .Sum(t => t.Valor),
 
-                Saldo = p.Transacoes
+                Saldo = (p.Transacoes ?? new List<Transacao>())
                     .Where(t => t.Tipo == TipoTransacao.Receita)
                     .Sum(t => t.Valor)
                     -
-                    p.Transacoes
+                    (p.Transacoes ?? new List<Transacao>())
                     .Where(t => t.Tipo == TipoTransacao.Despesa)
                     .Sum(t => t.Valor)
             }).ToList();
@@ -98,6 +106,21 @@ namespace ControleGastos.Api.Controllers
             };
 
             return Ok(resultado);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Post(PessoaCreateDto dto) 
+        {
+            var pessoa = new Pessoa
+            {
+                Nome = dto.Nome,
+                Idade = dto.Idade
+            };
+
+            _context.Pessoas.Add(pessoa);
+            await _context.SaveChangesAsync();
+
+            return Ok(pessoa);
         }
     }
 }

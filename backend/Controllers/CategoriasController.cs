@@ -1,4 +1,5 @@
 ﻿using ControleGastos.Api.Data;
+using ControleGastos.Api.Dtos;
 using ControleGastos.Api.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -23,10 +24,15 @@ namespace ControleGastos.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post(Categoria categoria) 
+        public async Task<IActionResult> Post(CategoriaCreateDto dto) 
         {
-            _context.Categorias.Add(categoria);
+            var categoria = new Categoria
+            {
+                Descricao = dto.Descricao,
+                Finalidade = dto.Finalidade
+            };
 
+            _context.Categorias.Add(categoria);
             await _context.SaveChangesAsync();
 
             return Ok(categoria);

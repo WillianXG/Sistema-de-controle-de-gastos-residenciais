@@ -9,7 +9,7 @@ namespace ControleGastos.Api.Models
 
         [Required]
         [MaxLength(400)]
-        public string Descricao { get; set; }
+        public string Descricao { get; set; } = string.Empty;
 
         public FinalidadeCategoria Finalidade { get; set; }
     }

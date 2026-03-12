@@ -1,5 +1,6 @@
 ﻿using ControleGastos.Api.Data;
 using ControleGastos.Api.Enums;
+using ControleGastos.Api.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -22,8 +23,8 @@ namespace ControleGastos.Api.Controllers
             var dados = await _context.Pessoas.Select(p => new
             {
                 Pessoa = p.Nome,
-                Receitas = p.Transacoes.Where(t => t.Tipo == TipoTransacao.Receita).Sum(t => (decimal?)t.Valor) ?? 0,
-                Despesas = p.Transacoes.Where(t => t.Tipo == TipoTransacao.Despesa).Sum(t => (decimal?)t.Valor) ?? 0
+                Receitas = (p.Transacoes ?? new List<Transacao>()).Where(t => t.Tipo == TipoTransacao.Receita).Sum(t => (decimal?)t.Valor) ?? 0,
+                Despesas = (p.Transacoes ?? new List<Transacao>()).Where(t => t.Tipo == TipoTransacao.Despesa).Sum(t => (decimal?)t.Valor) ?? 0
             }).ToListAsync();
 
             var resultado = dados.Select(d => new
