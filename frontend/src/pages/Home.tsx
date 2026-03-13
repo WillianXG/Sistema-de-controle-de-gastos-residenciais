@@ -12,6 +12,7 @@ export default function Home() {
 
   const [mensagem, setMensagem] = useState("");
 
+  // carregar todos os dados ao montar
   useEffect(() => {
     async function carregarDados() {
       try {
@@ -24,13 +25,14 @@ export default function Home() {
         setCategorias(cRes.data);
         setTransacoes(tRes.data);
       } catch {
-        setMensagem("Erro ao carregar dados");
+        setMensagem("Erro ao carregar dados"); // aviso simples
       }
     }
 
     carregarDados();
   }, []);
 
+  // calcular totais
   const totalReceitas = transacoes
     .filter((t) => t.tipo === 1)
     .reduce((sum, t) => sum + t.valor, 0);
@@ -51,6 +53,7 @@ export default function Home() {
         </div>
       )}
 
+      {/* cards de resumo */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-white shadow-md rounded p-4 flex flex-col justify-between">
           <span className="text-gray-500">Pessoas cadastradas</span>
@@ -69,12 +72,11 @@ export default function Home() {
 
         <div className="bg-white shadow-md rounded p-4 flex flex-col justify-between">
           <span className="text-gray-500">Saldo Total</span>
-          <span className="text-2xl font-bold">
-            R$ {saldo.toFixed(2)}
-          </span>
+          <span className="text-2xl font-bold">R$ {saldo.toFixed(2)}</span>
         </div>
       </div>
 
+      {/* links para gerenciamento */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
         <a
           href="/Pessoas"

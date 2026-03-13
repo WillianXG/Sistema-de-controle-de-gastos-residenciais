@@ -4,6 +4,7 @@ import { api } from "../api/api";
 import type { Categoria } from "../types/Categoria";
 import type { AxiosError } from "axios";
 
+// mapa para exibir a finalidade
 const finalidadeMap: Record<number, string> = {
   1: "Receita",
   2: "Despesa",
@@ -23,6 +24,7 @@ export default function Categorias() {
     return (error as AxiosError).isAxiosError !== undefined;
   }
 
+  // carregar categorias
   async function carregarCategorias() {
     try {
       const res = await api.get<Categoria[]>("/Categorias");
@@ -37,6 +39,7 @@ export default function Categorias() {
     carregarCategorias();
   }, []);
 
+  // criar categoria
   async function criarCategoria() {
     setMensagem("");
     setTipoMensagem("");
@@ -54,15 +57,15 @@ export default function Categorias() {
       setMensagem("Categoria criada com sucesso!");
       setTipoMensagem("sucesso");
       setDescricao("");
-      setFinalidade(2); // reset padrão
+      setFinalidade(2);
       await carregarCategorias();
     } catch (error: unknown) {
       if (isAxiosError(error)) {
-        if (error.response?.status === 400) {
-          setMensagem(error.response.data?.toString() || "Erro ao criar categoria");
-        } else {
-          setMensagem("Ocorreu um erro inesperado");
-        }
+        setMensagem(
+          error.response?.status === 400
+            ? error.response.data?.toString() || "Erro ao criar categoria"
+            : "Ocorreu um erro inesperado"
+        );
       } else {
         setMensagem("Ocorreu um erro inesperado");
       }
@@ -72,9 +75,9 @@ export default function Categorias() {
     }
   }
 
+  // deletar categoria
   async function deletarCategoria(id: number) {
-    const confirm = window.confirm("Tem certeza que deseja deletar esta categoria?");
-    if (!confirm) return;
+    if (!window.confirm("Tem certeza que deseja deletar esta categoria?")) return;
 
     try {
       await api.delete(`/Categorias/${id}`);
@@ -91,7 +94,7 @@ export default function Categorias() {
     <div className="max-w-xl mx-auto">
       <h2 className="text-2xl font-bold mb-4">Categorias</h2>
 
-      <div className="bg-white shadow-md rounded p-4 space-y-3">
+      <div className="bg-white shadow-md rounded p-4 mb-6 space-y-3">
         {mensagem && (
           <div
             className={`p-2 rounded text-white font-semibold ${
@@ -128,27 +131,25 @@ export default function Categorias() {
         >
           {enviando ? "Enviando..." : "Criar Categoria"}
         </button>
+      </div>
 
-        <h3 className="text-lg font-semibold mt-4">Lista de Categorias</h3>
-        <ul className="border rounded p-2 max-h-64 overflow-y-auto space-y-1">
-          {categorias.map((c) => (
-            <li
-              key={c.id}
-              className="p-2 border-b last:border-b-0 flex justify-between items-center"
+      {/* lista de categorias no estilo de cards */}
+      <div className="space-y-2">
+        {categorias.map((c) => (
+          <div
+            key={c.id}
+            className="border rounded p-3 shadow-sm flex justify-between items-center"
+          >
+            <span className="font-medium">{c.descricao}</span>
+            <span className="text-gray-500">{finalidadeMap[c.finalidade]}</span>
+            <button
+              className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-sm"
+              onClick={() => deletarCategoria(c.id)}
             >
-              <span>{c.descricao}</span>
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-600">{finalidadeMap[c.finalidade]}</span>
-                <button
-                  className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-sm"
-                  onClick={() => deletarCategoria(c.id)}
-                >
-                  Deletar
-                </button>
-              </div>
-            </li>
-          ))}
-        </ul>
+              Deletar
+            </button>
+          </div>
+        ))}
       </div>
     </div>
   );

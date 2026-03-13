@@ -5,32 +5,35 @@ import type { Categoria } from "../types/Categoria";
 import type { AxiosError } from "axios";
 
 export default function Transacoes() {
+  // campos do formulário
   const [descricao, setDescricao] = useState("");
   const [valor, setValor] = useState(0);
   const [tipo, setTipo] = useState<1 | 2>(1);
 
+  // dados para selects
   const [pessoas, setPessoas] = useState<Pessoa[]>([]);
   const [categorias, setCategorias] = useState<Categoria[]>([]);
-
   const [pessoaId, setPessoaId] = useState(0);
   const [categoriaId, setCategoriaId] = useState(0);
 
+  // estado de mensagens e envio
   const [mensagem, setMensagem] = useState("");
   const [tipoMensagem, setTipoMensagem] = useState<"erro" | "sucesso" | "">("");
   const [enviando, setEnviando] = useState(false);
 
-
+  // checagem de erro axios
   function isAxiosError(error: unknown): error is AxiosError {
     return (error as AxiosError).isAxiosError !== undefined;
   }
 
-
+  // filtra categorias de acordo com o tipo da transação
   const categoriasFiltradas = categorias.filter((c) => {
-    if (tipo === 1) return c.finalidade === 1 || c.finalidade === 3; 
-    if (tipo === 2) return c.finalidade === 2 || c.finalidade === 3; 
+    if (tipo === 1) return c.finalidade === 1 || c.finalidade === 3;
+    if (tipo === 2) return c.finalidade === 2 || c.finalidade === 3;
     return true;
   });
 
+  // criar nova transação
   async function criar() {
     setMensagem("");
     setTipoMensagem("");
@@ -84,6 +87,7 @@ export default function Transacoes() {
       setMensagem("Transação criada com sucesso!");
       setTipoMensagem("sucesso");
 
+      // reset campos
       setDescricao("");
       setValor(0);
       setTipo(1);
@@ -91,22 +95,21 @@ export default function Transacoes() {
       setCategoriaId(0);
     } catch (error: unknown) {
       if (isAxiosError(error)) {
-        if (error.response?.status === 400) {
-          setMensagem(error.response.data?.toString() || "Erro ao criar transação");
-          setTipoMensagem("erro");
-        } else {
-          setMensagem("Ocorreu um erro inesperado");
-          setTipoMensagem("erro");
-        }
+        setMensagem(
+          error.response?.status === 400
+            ? error.response.data?.toString() || "Erro ao criar transação"
+            : "Ocorreu um erro inesperado"
+        );
       } else {
         setMensagem("Ocorreu um erro inesperado");
-        setTipoMensagem("erro");
       }
+      setTipoMensagem("erro");
     } finally {
       setEnviando(false);
     }
   }
 
+  // carregar pessoas e categorias
   useEffect(() => {
     async function carregarDados() {
       try {
@@ -119,7 +122,6 @@ export default function Transacoes() {
         setTipoMensagem("erro");
       }
     }
-
     carregarDados();
   }, []);
 
@@ -128,6 +130,7 @@ export default function Transacoes() {
       <h2 className="text-2xl font-bold mb-4">Transações</h2>
 
       <div className="bg-white shadow-md rounded p-4 space-y-3">
+        {/* mensagem de status */}
         {mensagem && (
           <div
             className={`p-2 rounded text-white font-semibold ${
@@ -138,13 +141,13 @@ export default function Transacoes() {
           </div>
         )}
 
+        {/* formulário */}
         <input
           className="border p-2 rounded w-full"
           placeholder="Descrição"
           value={descricao}
           onChange={(e) => setDescricao(e.target.value)}
         />
-
         <input
           className="border p-2 rounded w-full"
           type="number"
@@ -152,19 +155,17 @@ export default function Transacoes() {
           value={valor}
           onChange={(e) => setValor(Number(e.target.value))}
         />
-
         <select
           className="border p-2 rounded w-full"
           value={tipo}
           onChange={(e) => {
             setTipo(Number(e.target.value) as 1 | 2);
-            setCategoriaId(0);  
+            setCategoriaId(0); // reset categoria ao mudar tipo
           }}
         >
           <option value={1}>Receita</option>
           <option value={2}>Despesa</option>
         </select>
-
         <select
           className="border p-2 rounded w-full"
           value={pessoaId}
@@ -177,7 +178,6 @@ export default function Transacoes() {
             </option>
           ))}
         </select>
-
         <select
           className="border p-2 rounded w-full"
           value={categoriaId}

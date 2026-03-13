@@ -11,6 +11,7 @@ export default function Pessoas() {
   const [tipoMensagem, setTipoMensagem] = useState<"erro" | "sucesso" | "">("");
   const [enviando, setEnviando] = useState(false);
 
+  // criar nova pessoa
   async function criarPessoa() {
     setMensagem("");
     setTipoMensagem("");
@@ -34,15 +35,15 @@ export default function Pessoas() {
 
       const res = await api.get<Pessoa[]>("/Pessoas");
       setPessoas(res.data);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (error) {
-      setMensagem("Ocorreu um erro ao criar pessoa");
+    } catch{
+      setMensagem("Erro ao criar pessoa"); // erro simples
       setTipoMensagem("erro");
     } finally {
       setEnviando(false);
     }
   }
 
+  // carregar lista de pessoas
   async function carregarPessoas() {
     try {
       const res = await api.get<Pessoa[]>("/Pessoas");
@@ -54,7 +55,7 @@ export default function Pessoas() {
   }
 
   useEffect(() => {
-    carregarPessoas();
+    carregarPessoas(); // inicia carregamento ao montar
   }, []);
 
   return (
@@ -98,6 +99,7 @@ export default function Pessoas() {
         </button>
       </div>
 
+      {/* lista de pessoas */}
       <div className="space-y-2">
         {pessoas.map((p) => (
           <div
