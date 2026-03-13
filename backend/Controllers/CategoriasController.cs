@@ -1,5 +1,6 @@
 ﻿using ControleGastos.Api.Data;
 using ControleGastos.Api.Dtos;
+using ControleGastos.Api.Enums;
 using ControleGastos.Api.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -54,6 +55,36 @@ namespace ControleGastos.Api.Controllers
             await _context.SaveChangesAsync();
 
             return Ok(new { message = "Categoria deletada com sucesso" });
+        }
+
+        // Buscar totais por categoria
+        [HttpGet("totais")]
+        public async Task<IActionResult> GetTotais()
+        {
+            var categorias = await _context.Categorias
+                .Include(c => c.Transacoes)
+                .ToListAsync();
+
+            var lista = categorias.Select(c => new CategoriaTotaisDto
+            {
+                CategoriaId = c.Id,
+                Descricao = c.Descricao,
+                Finalidade = (int)c.Finalidade, // converter enum para int
+                TotalReceitas = c.Transacoes.Where(t => t.Tipo == TipoTransacao.Receita).Sum(t => t.Valor),
+                TotalDespesas = c.Transacoes.Where(t => t.Tipo == TipoTransacao.Despesa).Sum(t => t.Valor),
+                Saldo = c.Transacoes.Where(t => t.Tipo == TipoTransacao.Receita).Sum(t => t.Valor)
+                      - c.Transacoes.Where(t => t.Tipo == TipoTransacao.Despesa).Sum(t => t.Valor)
+            }).ToList();
+
+            var response = new CategoriaRelatorioResponse
+            {
+                Categorias = lista,
+                TotalReceitas = lista.Sum(x => x.TotalReceitas),
+                TotalDespesas = lista.Sum(x => x.TotalDespesas),
+                SaldoTotal = lista.Sum(x => x.Saldo)
+            };
+
+            return Ok(response);
         }
     }
 }
