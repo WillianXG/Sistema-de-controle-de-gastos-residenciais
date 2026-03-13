@@ -1,3 +1,4 @@
+// src/pages/Categorias.tsx
 import { useEffect, useState } from "react";
 import { api } from "../api/api";
 import type { Categoria } from "../types/Categoria";
@@ -11,7 +12,7 @@ const finalidadeMap: Record<number, string> = {
 
 export default function Categorias() {
   const [descricao, setDescricao] = useState("");
-  const [finalidade, setFinalidade] = useState<1 | 2 | 3>(2); 
+  const [finalidade, setFinalidade] = useState<1 | 2 | 3>(2);
   const [categorias, setCategorias] = useState<Categoria[]>([]);
 
   const [mensagem, setMensagem] = useState("");
@@ -20,45 +21,6 @@ export default function Categorias() {
 
   function isAxiosError(error: unknown): error is AxiosError {
     return (error as AxiosError).isAxiosError !== undefined;
-  }
-
-  async function criarCategoria() {
-    setMensagem("");
-    setTipoMensagem("");
-    setEnviando(true);
-
-    if (!descricao.trim()) {
-      setMensagem("Descrição é obrigatória");
-      setTipoMensagem("erro");
-      setEnviando(false);
-      return;
-    }
-
-    try {
-      await api.post("/Categorias", { descricao, finalidade });
-
-      setMensagem("Categoria criada com sucesso!");
-      setTipoMensagem("sucesso");
-
-      setDescricao("");
-
-      carregarCategorias(); 
-    } catch (error: unknown) {
-      if (isAxiosError(error)) {
-        if (error.response?.status === 400) {
-          setMensagem(error.response.data?.toString() || "Erro ao criar categoria");
-          setTipoMensagem("erro");
-        } else {
-          setMensagem("Ocorreu um erro inesperado");
-          setTipoMensagem("erro");
-        }
-      } else {
-        setMensagem("Ocorreu um erro inesperado");
-        setTipoMensagem("erro");
-      }
-    } finally {
-      setEnviando(false);
-    }
   }
 
   async function carregarCategorias() {
@@ -74,6 +36,56 @@ export default function Categorias() {
   useEffect(() => {
     carregarCategorias();
   }, []);
+
+  async function criarCategoria() {
+    setMensagem("");
+    setTipoMensagem("");
+    setEnviando(true);
+
+    if (!descricao.trim()) {
+      setMensagem("Descrição é obrigatória");
+      setTipoMensagem("erro");
+      setEnviando(false);
+      return;
+    }
+
+    try {
+      await api.post("/Categorias", { descricao, finalidade });
+      setMensagem("Categoria criada com sucesso!");
+      setTipoMensagem("sucesso");
+      setDescricao("");
+      setFinalidade(2); // reset padrão
+      await carregarCategorias();
+    } catch (error: unknown) {
+      if (isAxiosError(error)) {
+        if (error.response?.status === 400) {
+          setMensagem(error.response.data?.toString() || "Erro ao criar categoria");
+        } else {
+          setMensagem("Ocorreu um erro inesperado");
+        }
+      } else {
+        setMensagem("Ocorreu um erro inesperado");
+      }
+      setTipoMensagem("erro");
+    } finally {
+      setEnviando(false);
+    }
+  }
+
+  async function deletarCategoria(id: number) {
+    const confirm = window.confirm("Tem certeza que deseja deletar esta categoria?");
+    if (!confirm) return;
+
+    try {
+      await api.delete(`/Categorias/${id}`);
+      setMensagem("Categoria deletada com sucesso!");
+      setTipoMensagem("sucesso");
+      await carregarCategorias();
+    } catch {
+      setMensagem("Erro ao deletar categoria");
+      setTipoMensagem("erro");
+    }
+  }
 
   return (
     <div className="max-w-xl mx-auto">
@@ -120,9 +132,20 @@ export default function Categorias() {
         <h3 className="text-lg font-semibold mt-4">Lista de Categorias</h3>
         <ul className="border rounded p-2 max-h-64 overflow-y-auto space-y-1">
           {categorias.map((c) => (
-            <li key={c.id} className="p-2 border-b last:border-b-0 flex justify-between">
+            <li
+              key={c.id}
+              className="p-2 border-b last:border-b-0 flex justify-between items-center"
+            >
               <span>{c.descricao}</span>
-              <span className="text-sm text-gray-600">{finalidadeMap[c.finalidade]}</span>
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-600">{finalidadeMap[c.finalidade]}</span>
+                <button
+                  className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-sm"
+                  onClick={() => deletarCategoria(c.id)}
+                >
+                  Deletar
+                </button>
+              </div>
             </li>
           ))}
         </ul>

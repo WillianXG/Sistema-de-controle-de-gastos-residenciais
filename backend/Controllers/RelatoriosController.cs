@@ -17,6 +17,7 @@ namespace ControleGastos.Api.Controllers
             _context = context;
         }
 
+        //Fazer buscar e e criar relatorio por pessoa
         [HttpGet("pessoas")]
         public async Task<IActionResult> TotaisPorPessoa() 
         {

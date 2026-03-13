@@ -18,6 +18,7 @@ namespace ControleGastos.Api.Controllers
             _context = context;
         }
 
+        //Atualizar Pessoas
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, Pessoa pessoa)
         {
@@ -37,6 +38,7 @@ namespace ControleGastos.Api.Controllers
 
         }
 
+        //Deletar Pessoas
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id) 
         {
@@ -57,7 +59,8 @@ namespace ControleGastos.Api.Controllers
 
             return Ok();
         }
-
+        
+        //Buscar Pessoas
         [HttpGet]
         public async Task<IActionResult> Get() 
         {
@@ -66,6 +69,7 @@ namespace ControleGastos.Api.Controllers
             return Ok(p);
         }
 
+        //Retorna o total de receitas, despesas e saldo de cada pessoa
         [HttpGet("totais")]
         public async Task<ActionResult<TotaisPessoasDto>> GetTotaisPorPessoa()
         {
@@ -108,6 +112,7 @@ namespace ControleGastos.Api.Controllers
             return Ok(resultado);
         }
 
+        //Cria nova pessoa
         [HttpPost]
         public async Task<IActionResult> Post(PessoaCreateDto dto) 
         {

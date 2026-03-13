@@ -18,12 +18,14 @@ namespace ControleGastos.Api.Controllers
             _context = context;
         }
 
+        //Buscar Transações
         [HttpGet]
         public async Task<IActionResult> Get() 
         {
             return Ok( await _context.Transacoes.Include(t => t.Pessoa).Include(t => t.Categoria).ToListAsync());
         }
 
+        //Criar e validar a criação de novas Transações
         [HttpPost]
         public async Task<IActionResult> Post(TransacaoCreateDto dto)
         {
